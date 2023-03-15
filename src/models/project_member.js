@@ -47,14 +47,15 @@ const ProjectMemberSchema = new Schema({
   },
   is_active: {
     type: Boolean,
-    default: true
+    default: false
   },
   invitation_accepted: {
     type: Boolean,
     default: false
   },
-  invite_eamil_sent: {
-    type:
+  invite_email_sent: {
+    type: Boolean,
+    default: false
   },
   timestamps: {
     createdAt: 'created_at', // Use `created_at` to store the created date

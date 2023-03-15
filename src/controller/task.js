@@ -1,37 +1,37 @@
-import ProjectMemberModel from "../models/project_member.js";
+import TaskModel from "../models/task.js";
 
-// Display list of all Project Members.
-export const AllProjectMembers = async(req, res) => {
-    const projectMember = await ProjectMemberModel.find().populate(['created_by', 'project_id', 'user_id']).exec();
+// Display list of all Tasks.
+export const AllTasks = async(req, res) => {
+    const task = await TaskModel.find().populate(['project_id']).exec();
     return res.status(200).json({
         status: true,
-        count: projectMember.length,
+        count: task.length,
         data: {
-            projectMember
+            task
         }
     });
 };
 
-// Display detail page for a specific Project Member.
-export const GetProjectMemberById = async (req, res) => {
+// Display detail page for a specific Task.
+export const GetTaskById = async (req, res) => {
     try {
-        const projectMember = await ProjectMemberModel.find({_id: req.params.id}).exec();
+        const task = await TaskModel.find({_id: req.params.id}).exec();
         return res.status(200).json({
             status: true,
-            count: projectMember.length,
+            count: task.length,
             data: {
-                projectMember
+                task
             }
         });
-        
     } catch (error) {
         let errors = {};
         switch (error.name) {
             case 'CastError':
                     errors[error.name] = error.message;
-                break;
-
+                    break;
+                    
             default:
+                errors[error.name] = error.message;
                 break;
         }
         return res.status(400).json({
@@ -41,28 +41,18 @@ export const GetProjectMemberById = async (req, res) => {
     }
 };
 
-// Display Project Member create form on GET.
-export const CreateProjectMember = async (req, res) => {
-  const projectMember = ProjectMemberModel;
+// Display Task create form on GET.
+export const CreateTask = async (req, res) => {
+  const task = TaskModel;
     req.body.created_by = req.user.id;
+
     try {
-        const count = await  projectMember.find({project_id: req.body.project_id, user_id: req.body.user_id}).count().exec();
-        console.log("count", count);
-        if (count){
-            return res.status(400).json({
-                status: false,
-                error: {
-                    message: "Project Member already exist"
-                }
-            });
-        }
-        
-        const projectMemberObj = await projectMember.create(req.body);
+        const taskObj = await TaskModel.create(req.body);
         return res.status(201).json({
             status: true,
-            count: projectMemberObj.length,
+            count: taskObj.length,
             data: {
-                projectMember: projectMemberObj
+                task: taskObj
             }
         });
 
@@ -83,17 +73,16 @@ export const CreateProjectMember = async (req, res) => {
     }
 };
 
-// Display Project Member delete form on GET.
-export const DeleteProjectMemberById = async(req, res) => {
+// Display Task delete form on GET.
+export const DeleteTaskById = async(req, res) => {
     try {
-        console.log(req.params.id);
-        const projectMemberObj = await ProjectMemberModel.findOne({_id: req.params.id}).exec();
-        const result = await ProjectMemberModel.findOneAndRemove({_id: req.params.id}).exec();
+        const taskObj = await TaskModel.findOne({_id: req.params.id}).exec();
+        const result = await TaskModel.findOneAndRemove({_id: req.params.id}).exec();
         return res.status(200).json({
             status: true,
-            count: projectMemberObj ? projectMemberObj.length : 0,
+            count: taskObj ? taskObj.length : 0,
             data: {
-                projectMember: projectMemberObj ?? {}
+                task: taskObj ?? {}
             }
         });
         
@@ -107,7 +96,7 @@ export const DeleteProjectMemberById = async(req, res) => {
             case 'TypeError':
                 errors[error.name] = error.message;
                 break;
-            
+                
             default:
                 errors[error.name] = error.message;
                 break;
@@ -119,25 +108,28 @@ export const DeleteProjectMemberById = async(req, res) => {
     }
 };
 
-export const UpdateProjectMember = async(req, res) => {
+export const UpdateTask = async(req, res) => {
+    delete req.body.project_id; //removed the project id as it can't be updated 
+
     
     let errors = {};
     try {
-        const projectMember = await ProjectMemberModel.findOneAndUpdate({_id: req.params.id}, req.body).exec();
+        const task = await TaskModel.findOneAndUpdate({_id: req.params.id}, req.body, {runValidators:true}).exec();
     
-        if (!projectMember){
-            errors['invalid_id'] = `Invalid projectMember id supplied ${req.params.id}`;
+        if (!task){
+            errors['invalid_id'] = `Invalid task id supplied ${req.params.id}`;
         }
-        const updatedProjectMemberObj = await ProjectMemberModel.findOne({_id: req.params.id}).exec();
+        const updatedTaskObj = await TaskModel.findOne({_id: req.params.id}).exec();
 
         return res.status(200).json({
             status: true,
-            count: updatedProjectMemberObj.length,
+            count: updatedTaskObj.length,
             data: {
-                projectMember: updatedProjectMemberObj
+                task: updatedTaskObj
             }
         });
     } catch (error) {
+        console.log(error);
         switch (error.name) {
             case 'CastError':
                 errors[error.name] = error.message;

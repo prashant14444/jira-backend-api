@@ -75,12 +75,14 @@ export const CreateProject = async (req, res) => {
 // Display Author delete form on GET.
 export const DeleteProjectById = async(req, res) => {
     try {
-        const project = await ProjectModel.findOneAndRemove({_id: req.params.id, nonExistent: true}).exec();
+        console.log(req.params.id);
+        const projectObj = await ProjectModel.findOne({_id: req.params.id}).exec();
+        const result = await ProjectModel.findOneAndRemove({_id: req.params.id}).exec();
         return res.status(200).json({
             status: true,
-            count: project.length,
+            count: projectObj ? projectObj.length : 0,
             data: {
-                project
+                projectMember: projectObj ?? {}
             }
         });
         
@@ -96,6 +98,7 @@ export const DeleteProjectById = async(req, res) => {
                 break;
             
             default:
+                errors[error.name] = error.message;
                 break;
         }
         return res.status(400).json({
@@ -106,14 +109,14 @@ export const DeleteProjectById = async(req, res) => {
 };
 
 export const UpdateProject = async(req, res) => {
-    const project = await ProjectModel.findOneAndUpdate({_id: req.params.id}, req.body).exec();
+    
     let errors = {};
-
-    if (!project){
-        errors['invalid_id'] = `Invalid project id supplied ${req.params.id}`;
-    }
-
     try {
+        const project = await ProjectModel.findOneAndUpdate({_id: req.params.id}, req.body).exec();
+    
+        if (!project){
+            errors['invalid_id'] = `Invalid project id supplied ${req.params.id}`;
+        }
         const updatedProjectObj = await ProjectModel.findOne({_id: req.params.id}).exec();
 
         return res.status(200).json({
@@ -132,8 +135,9 @@ export const UpdateProject = async(req, res) => {
             case 'TypeError':
                 errors[error.name] = error.message;
                 break;
-            
+                
             default:
+                errors[error.name] = error.message;
                 break;
         }
         return res.status(400).json({

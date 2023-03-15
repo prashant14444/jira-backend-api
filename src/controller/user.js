@@ -96,6 +96,7 @@ export const DeleteUserById = async(req, res) => {
                 break;
             
             default:
+                errors[error.name] = error.message;
                 break;
         }
         return res.status(400).json({
