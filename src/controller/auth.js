@@ -22,7 +22,7 @@ export const login = async(req, res) => {
     const user = await UserModel.findOne({email}).select('+password').exec();
     if (user && (await bcrypt.compare(password, user.password))) {
         // Create token
-        const token = jwt.sign({ user_id: user._id, email }, process.env.TOKEN_KEY, {expiresIn: "24h"});
+        const token = jwt.sign({ id: user._id, email }, process.env.TOKEN_KEY, {expiresIn: "24h"});
 
         let userObject = user.toObject();
         delete userObject.password;

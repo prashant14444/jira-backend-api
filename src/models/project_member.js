@@ -1,48 +1,60 @@
 import mongoose from 'mongoose';
-import * as dotenv from 'dotenv'
-import {USER_ROLES} from '../../utils/user_roles.js'
-import bcrypt from 'bcrypt';
-
+import {PROJECT_MEMBERS_DESIGNATIONS} from '../../utils/project_member_designations.js'
 const Schema = mongoose.Schema;
-dotenv.config();
 
 const ProjectMemberSchema = new Schema({
-  f_name: {
-    type: String,
-    max: 20,
+  user_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
     required: [true],
-  },
-  l_name: {
-    type: String,
-    max: 20,
-    required: [true]
-  },
-  email: { 
-    type: String,
-    required: true,
-    match: [/.+\@.+\..+/, 'Invalid email format'],
-    unique: true,
     validate: {
-      validator: async function(email) {
-        const count = await this.model('User').count({ email }).exec();
-        return !count;
-      },
-      message: props => `${props.value} is Already in use, please use different email`
+        validator: async function(user_id) {
+            const count = await this.model('User').count({ _id: user_id }).exec();
+            return count;
+        },
+        message: props => `"${props.value}" Invalid User ID. User doesn't exist by this ID.`
     },
   },
-  password: {
-    type: String,
+  project_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Project',
     required: [true],
-    select: false
+    validate: {
+        validator: async function(project_id) {
+            const count = await this.model('Project').count({ _id: project_id }).exec();
+            return count;
+        },
+        message: props => `${props.value} Invalid project ID. User doesn't exist by this ID.`
+    },
   },
-  email_confirmed: {
+  designation: { 
+    type: String,
+    required: true,
+    max: 30,
+    enum: [...PROJECT_MEMBERS_DESIGNATIONS]
+  },
+  created_by: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: [true],
+    validate: {
+        validator: async function(created_by) {
+            const count = await this.model('User').count({ _id: created_by }).exec();
+            return count;
+        },
+        message: props => `"${props.value}" Invalid created by ID. User doesn't exist by this ID.`
+    },
+  },
+  is_active: {
+    type: Boolean,
+    default: true
+  },
+  invitation_accepted: {
     type: Boolean,
     default: false
   },
-  role: {
-    type: String,
-    max: 30,
-    enum: [...USER_ROLES]
+  invite_eamil_sent: {
+    type:
   },
   timestamps: {
     createdAt: 'created_at', // Use `created_at` to store the created date
@@ -51,19 +63,6 @@ const ProjectMemberSchema = new Schema({
     default: Date.now(0)
   }
 });
-
-ProjectMemberSchema.pre('save', async function save(next) {
-  try {
-    const salt = await bcrypt.genSalt(parseInt(process.env.SALT_WORK_FACTOR));
-    this.password = await bcrypt.hash(this.password, salt);
-    return next();
-  } catch (err) {
-    console.error(`Errored while saving the password in hash form for user ${this.email}`);
-    console.error(err);
-    return next(err);
-  }
-});
-
 
 ProjectMemberSchema.virtual('id').get(function () {
   return this._id.toHexString();
@@ -74,5 +73,5 @@ ProjectMemberSchema.set('toJSON', {
 });
 
 
-const UserModel = mongoose.model('User', ProjectMemberSchema);
-export default UserModel
+const ProjectMemberModel = mongoose.model('ProjectMember', ProjectMemberSchema);
+export default ProjectMemberModel

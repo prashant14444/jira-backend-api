@@ -1,0 +1,1 @@
+export const PROJECT_MEMBERS_DESIGNATIONS = ['senior-developer', 'developer', 'designer', 'qa', 'ba', 'tech-lead', 'project-manager', 'scrum-master', 'scrum-master-and-project-manager'];
