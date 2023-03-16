@@ -13,6 +13,7 @@ import AuthRoutes from './src/routes/auth.js';
 import ProjectRoutes from './src/routes/project.js';
 import ProjectMemberRoutes from './src/routes/project_member.js';
 import TaskRoutes from './src/routes/task.js';
+import CommentRoutes from './src/routes/comment.js';
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use('/api/v1', AuthRoutes);
 app.use('/api/v1', ProjectRoutes);
 app.use('/api/v1', ProjectMemberRoutes);
 app.use('/api/v1', TaskRoutes);
+app.use('/api/v1', CommentRoutes);
 
 dotenv.config(); // loading all the .env variables
 
@@ -43,7 +45,7 @@ app.listen(process.env.PORT, async () => {
 	}
     
 	console.info(`app started listening on the port ${process.env.PORT}`);
-    console.info(`sever is running at ${process.env.HOST}:${process.env.PORT}`);
+    console.info(`server is running at ${process.env.HOST}:${process.env.PORT}`);
 });
 
 export default app;

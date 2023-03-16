@@ -1,37 +1,38 @@
+import CommentModel from "../models/comment.js";
 import TaskModel from "../models/task.js";
 
-// Display list of all Tasks.
-export const AllTasks = async(req, res) => {
-    const task = await TaskModel.find().populate(['project_id']).exec();
+// Display list of all Project Members.
+export const AllComments = async(req, res) => {
+    const comment = await CommentModel.find().populate(['commented_by', 'task_id']).exec();
     return res.status(200).json({
         status: true,
-        count: task.length,
+        count: comment.length,
         data: {
-            task
+            comment
         }
     });
 };
 
-// Display detail page for a specific Task.
-export const GetTaskById = async (req, res) => {
+// Display detail page for a specific Project Member.
+export const GetCommentById = async (req, res) => {
     try {
-        const task = await TaskModel.find({_id: req.params.id}).populate('comments').exec();
+        const comment = await CommentModel.find({_id: req.params.id}).exec();
         return res.status(200).json({
             status: true,
-            count: task.length,
+            count: comment.length,
             data: {
-                task
+                comment
             }
         });
+        
     } catch (error) {
         let errors = {};
         switch (error.name) {
             case 'CastError':
                     errors[error.name] = error.message;
-                    break;
-                    
+                break;
+
             default:
-                errors[error.name] = error.message;
                 break;
         }
         return res.status(400).json({
@@ -41,22 +42,28 @@ export const GetTaskById = async (req, res) => {
     }
 };
 
-// Display Task create form on GET.
-export const CreateTask = async (req, res) => {
-  const task = TaskModel;
-    req.body.created_by = req.user.id;
-
+// Display Project Member create form on GET.
+export const CreateComment = async (req, res) => {
+  const comment = CommentModel;
+    req.body.commented_by = req.user.id;
     try {
-        const taskObj = await TaskModel.create(req.body);
+        const commentObj = await comment.create(req.body);
+        
+        //find the task and add the reference to this comment to the task
+        let task = await TaskModel.findById(req.body.task_id).exec();
+        task.comments.push(commentObj._id);
+        task.save();
+
         return res.status(201).json({
             status: true,
-            count: taskObj.length,
+            count: commentObj.length,
             data: {
-                task: taskObj
+                comment: commentObj
             }
         });
 
     } catch (error) {
+        console.log(error);
         let errors = {};
         if (error.name === "ValidationError") {    
             Object.keys(error.errors).forEach((key) => {
@@ -73,16 +80,24 @@ export const CreateTask = async (req, res) => {
     }
 };
 
-// Display Task delete form on GET.
-export const DeleteTaskById = async(req, res) => {
+// Display Project Member delete form on GET.
+export const DeleteCommentById = async(req, res) => {
     try {
-        const taskObj = await TaskModel.findOne({_id: req.params.id}).exec();
-        const result = await TaskModel.findOneAndRemove({_id: req.params.id}).exec();
+        const commentObj = await CommentModel.findOne({_id: req.params.id}).exec();
+        const result = await CommentModel.findOneAndRemove({_id: req.params.id}).exec();
+  
+        //find the task and add the reference to this comment to the task
+        if (commentObj){
+            let task = await TaskModel.findById(commentObj.task_id).exec();
+            task.comments = task.comments.filter(function(item) { return item !== commentObj._id});
+            task.save();
+        }
+            
         return res.status(200).json({
             status: true,
-            count: taskObj ? taskObj.length : 0,
+            count: commentObj ? commentObj.length : 0,
             data: {
-                task: taskObj ?? {}
+                comment: commentObj ?? {}
             }
         });
         
@@ -96,7 +111,7 @@ export const DeleteTaskById = async(req, res) => {
             case 'TypeError':
                 errors[error.name] = error.message;
                 break;
-                
+            
             default:
                 errors[error.name] = error.message;
                 break;
@@ -108,28 +123,25 @@ export const DeleteTaskById = async(req, res) => {
     }
 };
 
-export const UpdateTask = async(req, res) => {
-    delete req.body.project_id; //removed the project id as it can't be updated 
-
+export const UpdateComment = async(req, res) => {
     
     let errors = {};
     try {
-        const task = await TaskModel.findOneAndUpdate({_id: req.params.id}, req.body, {runValidators:true}).exec();
+        const comment = await CommentModel.findOneAndUpdate({_id: req.params.id}, req.body).exec();
     
-        if (!task){
-            errors['invalid_id'] = `Invalid task id supplied ${req.params.id}`;
+        if (!comment){
+            errors['invalid_id'] = `Invalid comment id supplied ${req.params.id}`;
         }
-        const updatedTaskObj = await TaskModel.findOne({_id: req.params.id}).exec();
+        const updatedCommentObj = await CommentModel.findOne({_id: req.params.id}).exec();
 
         return res.status(200).json({
             status: true,
-            count: updatedTaskObj.length,
+            count: updatedCommentObj.length,
             data: {
-                task: updatedTaskObj
+                comment: updatedCommentObj
             }
         });
     } catch (error) {
-        console.log(error);
         switch (error.name) {
             case 'CastError':
                 errors[error.name] = error.message;
