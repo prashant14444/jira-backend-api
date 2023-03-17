@@ -14,6 +14,7 @@ import ProjectRoutes from './src/routes/project.js';
 import ProjectMemberRoutes from './src/routes/project_member.js';
 import TaskRoutes from './src/routes/task.js';
 import CommentRoutes from './src/routes/comment.js';
+import DocumentRoutes from './src/routes/document.js';
 
 const app = express();
 
@@ -26,19 +27,20 @@ app.use (bodyParser.urlencoded({extended:true})); // parse requests of content-t
 console.log(errorHandler);
 app.use(errorHandler);
 
+app.use(express.static('public'));// make the public foilders files available publicly
+
 app.use('/api/v1', UserRoutes);
 app.use('/api/v1', AuthRoutes);
 app.use('/api/v1', ProjectRoutes);
 app.use('/api/v1', ProjectMemberRoutes);
 app.use('/api/v1', TaskRoutes);
 app.use('/api/v1', CommentRoutes);
-
+app.use('/api/v1', DocumentRoutes);
 dotenv.config(); // loading all the .env variables
 
 mongoose.set('strictQuery', false);
 app.listen(process.env.PORT, async () => {
 	const mongoDB = CONNECTION_STRING;
-	console.log(mongoDB);
 	await mongoose.connect(mongoDB);
 	if (mongoose.connection.readyState){
 		console.log(`mongo db connected successfully => ${mongoDB}`);

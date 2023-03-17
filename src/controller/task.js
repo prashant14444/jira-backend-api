@@ -15,7 +15,7 @@ export const AllTasks = async(req, res) => {
 // Display detail page for a specific Task.
 export const GetTaskById = async (req, res) => {
     try {
-        const task = await TaskModel.find({_id: req.params.id}).populate('comments').exec();
+        const task = await TaskModel.find({_id: req.params.id}).populate(['comments', 'documents']).exec();
         return res.status(200).json({
             status: true,
             count: task.length,
@@ -45,6 +45,7 @@ export const GetTaskById = async (req, res) => {
 export const CreateTask = async (req, res) => {
   const task = TaskModel;
     req.body.created_by = req.user.id;
+    delete req.body.comments;
 
     try {
         const taskObj = await TaskModel.create(req.body);

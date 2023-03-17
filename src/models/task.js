@@ -59,7 +59,11 @@ const TaskSchema = new Schema({
   comments: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Comment'
-   }],
+  }],
+  documents:[{
+    type:mongoose.Schema.Types.ObjectId,
+    ref: 'Document'
+  }],
   timestamps: {
     createdAt: 'created_at', // Use `created_at` to store the created date
     updatedAt: 'updated_at', // and `updated_at` to store the last updated date,
