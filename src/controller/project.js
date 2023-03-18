@@ -15,7 +15,7 @@ export const AllProjects = async(req, res) => {
 // Display detail page for a specific Author.
 export const GetProjectById = async (req, res) => {
     try {
-        const project = await ProjectModel.find({_id: req.params.id}).exec();
+        const project = await ProjectModel.find({_id: req.params.id}).populate(['documents']).exec();
         return res.status(200).json({
             status: true,
             count: project.length,

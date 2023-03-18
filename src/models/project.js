@@ -23,6 +23,10 @@ const ProjectSchema = new Schema({
     type: Date,
     default: null
   },
+  documents:[{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Document'
+  }],
   created_by: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

@@ -16,7 +16,7 @@ export const AllComments = async(req, res) => {
 // Display detail page for a specific Project Member.
 export const GetCommentById = async (req, res) => {
     try {
-        const comment = await CommentModel.find({_id: req.params.id}).exec();
+        const comment = await CommentModel.find({_id: req.params.id}).populate(['documents']).exec();
         return res.status(200).json({
             status: true,
             count: comment.length,

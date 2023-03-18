@@ -1,0 +1,1 @@
+export const DOCUMENT_COLLECTION_NAMES = ['documents', 'tasks', 'comments'];

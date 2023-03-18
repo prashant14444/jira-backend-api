@@ -25,7 +25,44 @@ const seedUsers = [
         "username": "abhishek123",
         "confirm_password": "abhishek123",
         "role": "admin"
+    },
+    {
+        "email": "rajni123@yopmail.com",
+        "password": "rajni123",
+        "f_name": "Rajni",
+        "l_name": "Kaler",
+        "username": "rajni123",
+        "confirm_password": "rajni123",
+        "role": "user"
+    },
+    {
+        "email": "aman123@yopmail.com",
+        "password": "aman123",
+        "f_name": "Aman",
+        "l_name": "Mehra",
+        "username": "aman123",
+        "confirm_password": "aman123",
+        "role": "user"
+    },
+    {
+        "email": "gurvinder@yopmail.com",
+        "password": "gurvinder",
+        "f_name": "Gurvinder",
+        "l_name": "Kaur",
+        "username": "gurvinder",
+        "confirm_password": "gurvinder",
+        "role": "user"
+    },
+    {
+        "email": "munesh123@yopmail.com",
+        "password": "munesh123",
+        "f_name": "Munesh",
+        "l_name": "Manhas",
+        "username": "munesh123",
+        "confirm_password": "munesh123",
+        "role": "user"
     }
+
 ];
 
 const seedUsersCollection = async () => {

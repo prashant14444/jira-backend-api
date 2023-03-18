@@ -5,6 +5,7 @@ import DocumentModel from "../models/document.js";
 import TaskModel from "../models/task.js";
 import CommentModel from "../models/comment.js";
 import ProjectMemberModel from '../models/project_member.js';
+import ProjectModel from '../models/project.js';
 
 
 // Display list of all Documents.
@@ -58,10 +59,13 @@ export const CreateDocument = async (req, res) => {
         
         let task_id = req.body.task_id;
         let comment_id = req.body.comment_id;
+        let project_id = req.body.project_id;
+
+        let collection_name = task_id ? 'tasks': (comment_id ? 'comments' : 'documents');
+        console.log("collection_name", collection_name);
 
         for(let i = 0; i < files.length; i++){
             let file = files[i];
-            console.log("file => ", file);
             let tempObj = {
                 name: file.originalname,
                 name_on_filesystem: file.filesystem_name,
@@ -69,6 +73,8 @@ export const CreateDocument = async (req, res) => {
                 project_member_id: projectMember.id,
                 task_id: task_id || null,
                 comment_id: comment_id || null,
+                project_id: project_id || null,
+                collection_name,
             }
             // console.log("tempObj=>", tempObj);
             let document = await DocumentModel.create(tempObj);
@@ -80,11 +86,15 @@ export const CreateDocument = async (req, res) => {
         if (comment_id){
             let comment = await CommentModel.findById(comment_id).exec();
             comment.documents.push(...documentIds);
-            comment.save();
+            comment.save({ validateBeforeSave: false });
         } else if (task_id){
             let task = await TaskModel.findById(task_id).exec();
             task.documents.push(...documentIds);
-            task.save();
+            task.save({ validateBeforeSave: false });
+        } else if (project_id){
+            let project = await ProjectModel.findById(project_id).exec();
+            project.documents.push(...documentIds);
+            project.save({ validateBeforeSave: false });
         }
 
         return res.status(201).json({
@@ -132,6 +142,10 @@ export const DeleteDocumentById = async(req, res) => {
                 let task = await TaskModel.findById(document.task_id).exec();
                 task.documents = task.documents.filter(function(item) { return item !== document._id});
                 task.save();
+            } else if (document.project_id){
+                let project = await ProjectModel.findById(document.project_id).exec();
+                project.documents = project.documents.filter(function(item) { return item !== document._id});
+                project.save();
             }
             
             //remove the file from the filesystem too.

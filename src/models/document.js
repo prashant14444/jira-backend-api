@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv'
 import mongoose from 'mongoose';
+import {DOCUMENT_COLLECTION_NAMES} from '../../utils/document_collection_names.js';
 
 dotenv.config(); // loading all the .env variables
 
@@ -53,6 +54,23 @@ const DocumentSchema = new Schema({
       },
       message: props => `"${props.value}" Invalid comment ID. Comment doesn't exist by this ID`
     },
+  },
+  project_id: { 
+    type: mongoose.Schema.Types.ObjectId,
+    required: false,
+    default: null,
+    validate: {
+      validator: async function(project_id) {
+        const isExist = await this.model('Project').count({ _id: project_id }).exec();
+        return isExist || !project_id;
+      },
+      message: props => `"${props.value}" Invalid project ID. Project doesn't exist by this ID`
+    },
+  },
+  collection_name: {
+    type: String,
+    required: true,
+    enum: [...DOCUMENT_COLLECTION_NAMES]
   },
   timestamps: {
     createdAt: 'created_at', // Use `created_at` to store the created date
