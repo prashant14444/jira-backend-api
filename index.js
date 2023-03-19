@@ -16,6 +16,7 @@ import TaskRoutes from './src/routes/task.js';
 import CommentRoutes from './src/routes/comment.js';
 import DocumentRoutes from './src/routes/document.js';
 import SprintRoutes from './src/routes/sprint.js';
+import EpicRoutes from './src/routes/epic.js';
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use('/api/v1', TaskRoutes);
 app.use('/api/v1', CommentRoutes);
 app.use('/api/v1', DocumentRoutes);
 app.use('/api/v1', SprintRoutes);
+app.use('/api/v1', EpicRoutes);
 
 dotenv.config(); // loading all the .env variables
 

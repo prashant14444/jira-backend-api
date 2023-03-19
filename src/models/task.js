@@ -48,13 +48,13 @@ const TaskSchema = new Schema({
   epic_id: {
     type: mongoose.Schema.Types.ObjectId,
     default: null,
-    // validate: {
-    //   validator: async function(project_id) {
-    //     const isExist = await this.model('Project').count({ _id: project_id }).exec();
-    //     return isExist;
-    //   },
-    //   message: props => `"${props.value}" Invalid project ID. Project doesn't exist by this ID`
-    // },
+    validate: {
+      validator: async function(epic_id) {
+        const isExist = await this.model('Epic').count({ _id: epic_id }).exec();
+        return isExist || !epic_id;
+      },
+      message: props => `"${props.value}" Invalid Epic ID. Epic doesn't exist by this ID`
+    },
   },
   created_by: {
     type: mongoose.Schema.Types.ObjectId,
