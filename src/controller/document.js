@@ -136,15 +136,15 @@ export const DeleteDocumentById = async(req, res) => {
         if (document){
             if (document.comment_id){
                 let comment = await CommentModel.findById(document.comment_id).exec();
-                comment.documents = comment.documents.filter(function(item) { return item !== document._id});
+                comment.documents = comment.documents.filter(function(item) { return item !== document._id.toString()});
                 comment.save();
             } else if (document.task_id){
                 let task = await TaskModel.findById(document.task_id).exec();
-                task.documents = task.documents.filter(function(item) { return item !== document._id});
+                task.documents = task.documents.filter(function(item) { return item !== document._id.toString()});
                 task.save();
             } else if (document.project_id){
                 let project = await ProjectModel.findById(document.project_id).exec();
-                project.documents = project.documents.filter(function(item) { return item !== document._id});
+                project.documents = project.documents.filter(function(item) { return item !== document._id.toString()});
                 project.save();
             }
             

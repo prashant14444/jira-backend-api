@@ -83,13 +83,17 @@ export const CreateComment = async (req, res) => {
 // Display Project Member delete form on GET.
 export const DeleteCommentById = async(req, res) => {
     try {
-        const commentObj = await CommentModel.findOne({_id: req.params.id}).exec();
-        const result = await CommentModel.findOneAndRemove({_id: req.params.id}).exec();
-  
+        const commentObj = await CommentModel.findById(req.params.id).exec();
+        console.log("commentObj", commentObj);
+        const result = await CommentModel.findByIdAndRemove(req.params.id).exec();
+        
         //find the task and add the reference to this comment to the task
         if (commentObj){
             let task = await TaskModel.findById(commentObj.task_id).exec();
-            task.comments = task.comments.filter(function(item) { return item !== commentObj._id});
+            let updatedComments = task.comments.filter(function(item) { 
+                return item != commentObj._id.toString();
+            });
+            task.comments = updatedComments;
             task.save();
         }
             

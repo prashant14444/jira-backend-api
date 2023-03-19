@@ -43,7 +43,8 @@ export const GetProjectById = async (req, res) => {
 
 // Display Author create form on GET.
 export const CreateProject = async (req, res) => {
-  const project = ProjectModel;
+    const project = ProjectModel;
+    req.body.created_by = req.user.id;
 
     try {
         const projectObj = await project.create(req.body);
@@ -82,7 +83,7 @@ export const DeleteProjectById = async(req, res) => {
             status: true,
             count: projectObj ? projectObj.length : 0,
             data: {
-                projectMember: projectObj ?? {}
+                project: projectObj ?? {}
             }
         });
         

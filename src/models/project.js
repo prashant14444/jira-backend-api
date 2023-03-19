@@ -27,15 +27,16 @@ const ProjectSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Document'
   }],
+
+  //created by is referred from the User model because, project can be created by the user not the project member. Project memebr get created once the project gets created by a user. 
   created_by: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: [true],
     validate: {
         validator: async function(created_by) {
-            const count = await this.model('User').count({ _id: created_by }).exec();
-            console.log("hfhjsfhjsdfhjsdfhjsdfhjsdhjfshdjfhsdjf", count);
-            return !count;
+            const doesExist = await this.model('User').count({ _id: created_by }).exec();
+            return doesExist;
         },
         message: props => `"${props.value}" Invalid created by ID. User doesn't exist by this ID.`
     },

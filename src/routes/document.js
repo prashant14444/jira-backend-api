@@ -3,7 +3,7 @@ import {AllDocuments, CreateDocument, GetDocumentById, DeleteDocumentById, Updat
 
 //import middlewares
 import verifyToken from '../middleware/auth.js'
-import uploadOptions from '../helper/file_upload.js';
+import uploadOptions from '../middleware/file_upload.js';
 
 const DocumentRoutes = express.Router();
 

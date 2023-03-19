@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import {STATUS, TYPES, PRIORITY} from '../../utils/task.js';
+import {STATUS, TYPES, PRIORITY, TASK_DEFAULT_STATUS} from '../../utils/task.js';
 
 const Schema = mongoose.Schema;
 
@@ -38,7 +38,7 @@ const TaskSchema = new Schema({
   status: {
     type: String,
     ref: 'User',
-    default: null,
+    default: TASK_DEFAULT_STATUS,
     enum: [...STATUS]
   },
   due_date: {
@@ -55,6 +55,31 @@ const TaskSchema = new Schema({
     //   },
     //   message: props => `"${props.value}" Invalid project ID. Project doesn't exist by this ID`
     // },
+  },
+  created_by: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: [true],
+    ref: 'ProjectMember',
+    validate: {
+      validator: async function(created_by) {
+        const isExist = await this.model('ProjectMember').count({ _id: created_by }).exec();
+        return isExist;
+      },
+      message: props => `"${props.value}" Invalid projectMember ID. ProjectMember doesn't exist by this ID`
+    },
+  },
+  assigned_to: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ProjectMember',
+    required:[false],
+    default: null,
+    validate: {
+      validator: async function(assigned_to) {
+        const isExist = await this.model('ProjectMember').count({ _id: assigned_to }).exec();
+        return isExist || !assigned_to;
+      },
+      message: props => `"${props.value}" Invalid projectMember ID. ProjectMember doesn't exist by this ID`
+    },
   },
   comments: [{
     type: mongoose.Schema.Types.ObjectId,
