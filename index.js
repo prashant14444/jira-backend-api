@@ -20,14 +20,18 @@ import EpicRoutes from './src/routes/epic.js';
 
 const app = express();
 
+app.use(cors());
 const corsOptions = {
-	origin: `${process.env.HOST}:${process.env.PORT}`
-};
-app.use (cors(corsOptions));
+	origin: true,
+	credentials: true
+}
+app.options('*', cors(corsOptions)); // preflight OPTIONS; put before other routes
+
 app.use (bodyParser.json()); // parse requests of content-type - application/json
 app.use (bodyParser.urlencoded({extended:true})); // parse requests of content-type - application/x-www-form-urlencoded
 console.log(errorHandler);
 app.use(errorHandler);
+
 
 app.use(express.static('public'));// make the public foilders files available publicly
 
@@ -40,6 +44,7 @@ app.use('/api/v1', CommentRoutes);
 app.use('/api/v1', DocumentRoutes);
 app.use('/api/v1', SprintRoutes);
 app.use('/api/v1', EpicRoutes);
+
 
 dotenv.config(); // loading all the .env variables
 
