@@ -43,6 +43,7 @@ export const GetProjectById = async (req, res) => {
 
 // Display Author create form on GET.
 export const CreateProject = async (req, res) => {
+    console.log(req.body);
     const project = ProjectModel;
     req.body.created_by = req.user.id;
 

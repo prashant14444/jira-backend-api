@@ -43,7 +43,7 @@ export const GetUserById = async (req, res) => {
 
 // Display Author create form on GET.
 export const CreateUser = async (req, res) => {
-  const user = UserModel;
+    const user = UserModel;
 
     try {
         const userObj = await user.create(req.body);
@@ -74,11 +74,25 @@ export const CreateUser = async (req, res) => {
 
 // Display Author delete form on GET.
 export const DeleteUserById = async(req, res) => {
+    console.log(req.params.id);
+
     try {
-        const User = await UserModel.findOneAndRemove({_id: req.params.id, nonExistent: true}).exec();
+        const userObj = await UserModel.findById(req.params.id);
+
+        if(!userObj){
+            return res.status(404).json({
+                status: false,
+                count: 0,
+                error: {
+                    message:"User not found, Please refresh the page"
+                }
+            });
+        }
+        const User = await UserModel.findOneAndRemove({_id: req.params.id}).exec();
+        console.log(User);
         return res.status(200).json({
             status: true,
-            count: User.length,
+            count: userObj.length,
             data: {
                 user:User
             }

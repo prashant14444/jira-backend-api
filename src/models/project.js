@@ -9,11 +9,11 @@ const ProjectSchema = new Schema({
     required: [true],
     unique: true,
     validate: {
-        validator: async function(name) {
-            const count = await this.model('Project').count({ name }).exec();
-            return !count;
-        },
-        message: props => `"${props.value}" name is Already in use, please use different name`
+      validator: async function(name) {
+        const count = await this.model('Project').count({ name: { $regex: '.*' + name.toLowerCase() + '.*'  }}).exec();
+        return !count;
+      },
+      message: props => `"${props.value}" name is Already in use, please use different name`
     },
   },
   description: {
@@ -34,11 +34,11 @@ const ProjectSchema = new Schema({
     ref: 'User',
     required: [true],
     validate: {
-        validator: async function(created_by) {
-            const doesExist = await this.model('User').count({ _id: created_by }).exec();
-            return doesExist;
-        },
-        message: props => `"${props.value}" Invalid created by ID. User doesn't exist by this ID.`
+      validator: async function(created_by) {
+        const doesExist = await this.model('User').count({ _id: created_by }).exec();
+        return doesExist;
+      },
+      message: props => `"${props.value}" Invalid created by ID. User doesn't exist by this ID.`
     },
   },
   timestamps: {
