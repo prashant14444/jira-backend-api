@@ -2,14 +2,30 @@ import ProjectMemberModel from "../models/project_member.js";
 
 // Display list of all Project Members.
 export const AllProjectMembers = async(req, res) => {
-    const projectMember = await ProjectMemberModel.find().populate(['created_by', 'project_id', 'user_id']).exec();
-    return res.status(200).json({
-        status: true,
-        count: projectMember.length,
-        data: {
-            projectMember
+    try {
+        const projectMember = await ProjectMemberModel.find({project_id: req.query.projectId}).populate(['created_by', 'project_id', 'user_id']).exec();
+        return res.status(200).json({
+            status: true,
+            count: projectMember.length,
+            data: {
+                projectMember
+            }
+        });
+    } catch (error) {
+        let errors = {};
+        switch (error.name) {
+            case 'CastError':
+                    errors[error.name] = error.message;
+                break;
+
+            default:
+                break;
         }
-    });
+        return res.status(400).json({
+            status: false,
+            errors
+        });
+    }
 };
 
 // Display detail page for a specific Project Member.
@@ -47,7 +63,6 @@ export const CreateProjectMember = async (req, res) => {
     req.body.created_by = req.user.id;
     try {
         const count = await  projectMember.find({project_id: req.body.project_id, user_id: req.body.user_id}).count().exec();
-        console.log("count", count);
         if (count){
             return res.status(400).json({
                 status: false,
@@ -57,7 +72,8 @@ export const CreateProjectMember = async (req, res) => {
             });
         }
         
-        const projectMemberObj = await projectMember.create(req.body);
+        let projectMemberObj = await projectMember.create(req.body);
+        projectMemberObj = await projectMember.findById(projectMemberObj._id).populate(['created_by', 'project_id', 'user_id']).exec();
         return res.status(201).json({
             status: true,
             count: projectMemberObj.length,
