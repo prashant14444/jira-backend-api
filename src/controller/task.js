@@ -1,4 +1,5 @@
 import { TASK_STATUS_BACKLOG } from "../../utils/task.js";
+import mongoose from 'mongoose';
 
 //import all models here
 import TaskModel from "../models/task.js";
@@ -9,15 +10,45 @@ import {removeDuplicateIfExist, insertTaskIdIfNotExist} from '../controller_help
 
 // Display list of all Tasks that belong to a project.
 export const AllTasks = async(req, res) => {
-    const task = await TaskModel.find({project_id: req.query.project_id}).exec();
-
-    return res.status(200).json({
-        status: true,
-        count: task.length,
-        data: {
-            task
+    try {
+        let projectMembers = req.query.projectMembers;
+        if (projectMembers){
+            projectMembers = JSON.parse(req.query.projectMembers);
+            projectMembers.map(member => new mongoose.Types.ObjectId(member));
+        } else {
+            projectMembers = [];
         }
-    });
+
+        let task = null;
+        if (projectMembers.length > 0){
+            task = await TaskModel.find({project_id: req.query.project_id, assigned_to: {$in: projectMembers}}).exec();
+        } else{
+            task = await TaskModel.find({project_id: req.query.project_id}).exec();
+        }
+
+        return res.status(200).json({
+            status: true,
+            count: task.length,
+            data: {
+                task
+            }
+        });
+    } catch (error) {
+        let errors = {};
+        switch (error.name) {
+            case 'CastError':
+                    errors[error.name] = error.message;
+                    break;
+                    
+            default:
+                errors[error.name] = error.message;
+                break;
+        }
+        return res.status(400).json({
+            status: false,
+            errors
+        });
+    }
 };
 
 // Display detail page for a specific Task.
