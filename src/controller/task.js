@@ -21,10 +21,17 @@ export const AllTasks = async(req, res) => {
 
         let task = null;
         if (projectMembers.length > 0){
-            task = await TaskModel.find({project_id: req.query.project_id, assigned_to: {$in: projectMembers}}).exec();
+            task = TaskModel.find({project_id: req.query.project_id, assigned_to: {$in: projectMembers}});
         } else{
-            task = await TaskModel.find({project_id: req.query.project_id}).exec();
+            task = TaskModel.find({project_id: req.query.project_id})
         }
+
+        task = await task.populate({
+            path : 'assigned_to',
+            populate : {
+              path : 'user_id'
+            }
+          }).exec();
 
         return res.status(200).json({
             status: true,
