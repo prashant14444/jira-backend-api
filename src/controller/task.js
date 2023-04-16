@@ -12,6 +12,8 @@ import {removeDuplicateIfExist, insertTaskIdIfNotExist} from '../controller_help
 export const AllTasks = async(req, res) => {
     try {
         let projectMembers = req.query.projectMembers;
+        let searchTerm = req.query.searchTerm;
+
         if (projectMembers){
             projectMembers = JSON.parse(req.query.projectMembers);
             projectMembers.map(member => new mongoose.Types.ObjectId(member));
@@ -29,9 +31,13 @@ export const AllTasks = async(req, res) => {
         task = await task.populate({
             path : 'assigned_to',
             populate : {
-              path : 'user_id'
+                path : 'user_id'
             }
-          }).exec();
+        }).exec();
+
+        if(searchTerm){
+            task = task.filter((task) => {return task.title.indexOf(searchTerm) !== -1})
+        }
 
         return res.status(200).json({
             status: true,
