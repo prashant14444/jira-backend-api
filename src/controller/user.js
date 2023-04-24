@@ -119,3 +119,42 @@ export const DeleteUserById = async(req, res) => {
         });
     }
 };
+
+export const UpdateUser = async(req, res) => {
+    
+    let errors = {};
+    try {
+        const user = await UserModel.findOneAndUpdate({_id: req.params.id}, req.body).exec();
+    
+        if (!user){
+            errors['invalid_id'] = `Invalid user id supplied ${req.params.id}`;
+        }
+        const updatedUserObj = await UserModel.findOne({_id: req.params.id}).exec();
+
+        return res.status(200).json({
+            status: true,
+            count: updatedUserObj.length,
+            data: {
+                user: updatedUserObj
+            }
+        });
+    } catch (error) {
+        switch (error.name) {
+            case 'CastError':
+                errors[error.name] = error.message;
+                break;
+            
+            case 'TypeError':
+                errors[error.name] = error.message;
+                break;
+                
+            default:
+                errors[error.name] = error.message;
+                break;
+        }
+        return res.status(400).json({
+            status: false,
+            errors
+        });
+    }
+}

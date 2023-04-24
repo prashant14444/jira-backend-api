@@ -44,6 +44,17 @@ const UserSchema = new Schema({
     max: 30,
     enum: [...USER_ROLES]
   },
+  default_project_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    validate: {
+      validator: async function(default_project_id) {
+        const isExist = await this.model('Project').count({ _id: default_project_id }).exec();
+        return isExist;
+      },
+      message: props => `"${props.value}" Invalid project ID. Project doesn't exist by this ID`
+    },
+  },
   timestamps: {
     createdAt: 'created_at', // Use `created_at` to store the created date
     updatedAt: 'updated_at', // and `updated_at` to store the last updated date,

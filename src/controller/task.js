@@ -70,9 +70,9 @@ export const GetTaskById = async (req, res) => {
         const task = await TaskModel.find({_id: req.params.id, project_id: req.query.project_id}).populate(['comments', 'documents']).exec();
         return res.status(200).json({
             status: true,
-            count: task.length,
+            count: task ? task.length : 0,
             data: {
-                task
+                task: task ? task[0] : {}
             }
         });
     } catch (error) {
