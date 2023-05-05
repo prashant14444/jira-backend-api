@@ -27,8 +27,8 @@ const corsOptions = {
 }
 app.options('*', cors(corsOptions)); // preflight OPTIONS; put before other routes
 
-app.use (bodyParser.json()); // parse requests of content-type - application/json
-app.use (bodyParser.urlencoded({extended:true})); // parse requests of content-type - application/x-www-form-urlencoded
+app.use (bodyParser.json({limit: '50mb'})); // parse requests of content-type - application/json
+app.use (bodyParser.urlencoded({extended:true, limit: '50mb'})); // parse requests of content-type - application/x-www-form-urlencoded
 console.log(errorHandler);
 app.use(errorHandler);
 

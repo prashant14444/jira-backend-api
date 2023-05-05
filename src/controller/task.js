@@ -115,11 +115,18 @@ export const CreateTask = async (req, res) => {
             sprint.save();
         }
 
+        let updatedTask = await TaskModel.findOne({_id: taskObj.id}).populate({
+            path : 'assigned_to',
+            populate : {
+                path : 'user_id'
+            }
+        }).exec();
+
         return res.status(201).json({
             status: true,
             count: taskObj.length,
             data: {
-                task: taskObj
+                task: updatedTask
             }
         });
 
@@ -209,11 +216,18 @@ export const UpdateTask = async(req, res) => {
             sprint.save();
         }
 
+        let updatedTask = await TaskModel.findOne({_id: req.params.id}).populate({
+            path : 'assigned_to',
+            populate : {
+                path : 'user_id'
+            }
+        }).exec();
+
         return res.status(200).json({
             status: true,
-            count: task.length,
+            count: updatedTask.length,
             data: {
-                task
+                task: updatedTask
             }
         });
     } catch (error) {
