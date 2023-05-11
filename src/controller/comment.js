@@ -3,7 +3,14 @@ import TaskModel from "../models/task.js";
 
 // Display list of all Project Members.
 export const AllComments = async(req, res) => {
-    const comment = await CommentModel.find().populate(['commented_by', 'task_id']).exec();
+    const task_id = req.query.task_id;
+
+    const comment = await CommentModel.find({task_id}).populate({
+        path : 'commented_by',
+        populate : {
+            path : 'user_id'
+        }
+    }).exec();
     return res.status(200).json({
         status: true,
         count: comment.length,
@@ -44,21 +51,27 @@ export const GetCommentById = async (req, res) => {
 
 // Display Project Member create form on GET.
 export const CreateComment = async (req, res) => {
-  const comment = CommentModel;
-    req.body.commented_by = req.user.id;
+    req.body.commented_by = req.projectMember.id;
+
     try {
-        const commentObj = await comment.create(req.body);
+        const commentObj = await CommentModel.create(req.body);
         
         //find the task and add the reference to this comment to the task
         let task = await TaskModel.findById(req.body.task_id).exec();
         task.comments.push(commentObj._id);
         task.save();
 
+        const comment = await CommentModel.findById(commentObj._id).populate({
+            path : 'commented_by',
+            populate : {
+                path : 'user_id'
+            }
+        }).exec();
         return res.status(201).json({
             status: true,
-            count: commentObj.length,
+            count: comment.length,
             data: {
-                comment: commentObj
+                comment
             }
         });
 

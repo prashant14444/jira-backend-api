@@ -2,8 +2,8 @@ import express from "express";
 import {AllTasks, CreateTask, GetTaskById, DeleteTaskById, UpdateTask} from '../controller/task.js';
 
 //import middlewares
-import verifyToken from '../middleware/auth.js'
-import isProjectMember from '../middleware/project_member.js'
+import verifyToken from '../middleware/auth.js';
+import isProjectMember from '../middleware/project_member.js';
 
 const TaskRoutes = express.Router();
 

@@ -11,9 +11,18 @@ const CommentSchema = new Schema({
   },
   commented_by: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: "ProjectMember",
+    validate: {
+      validator: async function(commented_by) {
+        const isExist = await this.model('ProjectMember').count({ _id: commented_by }).exec();
+        return isExist;
+      },
+      message: props => `"${props.value}" Invalid Project Member ID. Projet Member doesn't exist by this ID`
+    },
   },
   task_id: { 
     type: mongoose.Schema.Types.ObjectId,
+    ref: "Task",
     required: true,
     validate: {
       validator: async function(task_id) {

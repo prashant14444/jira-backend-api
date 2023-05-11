@@ -26,8 +26,8 @@ const TaskSchema = new Schema({
   priority: {
     type: String,
     ref: 'User',
-    default: null,
-    enum: [...PRIORITY]
+    default: PRIORITY[0],
+    enum: [...PRIORITY],
   },
   type: {
     type: String,
@@ -73,14 +73,14 @@ const TaskSchema = new Schema({
     ref: 'ProjectMember',
     required:[false],
     default: null,
-    // validate: {
-    //   validator: async function(assigned_to) {
-    //     const isExist = await this.model('ProjectMember').count({ _id: assigned_to }).exec();
-    //     console.log("assigned_to id exist ", isExist);
-    //     return isExist || !assigned_to;
-    //   },
-    //   message: props => `"${props.value}" Invalid projectMember ID. ProjectMember doesn't exist by this ID`
-    // },
+    validate: {
+      validator: async function(assigned_to) {
+        const isExist = await this.model('ProjectMember').count({ _id: assigned_to }).exec();
+        console.log("assigned_to id exist ", isExist);
+        return isExist || !assigned_to;
+      },
+      message: props => `"${props.value}" Invalid projectMember ID. ProjectMember doesn't exist by this ID`
+    },
   },
   comments: [{
     type: mongoose.Schema.Types.ObjectId,
