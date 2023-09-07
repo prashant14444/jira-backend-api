@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import * as dotenv from 'dotenv'
-import {USER_ROLES} from '../../utils/user_roles.js'
+import {USER_ROLES} from '../../constants/user_roles.js'
 import bcrypt from 'bcrypt';
 
 const Schema = mongoose.Schema;

@@ -1,5 +1,5 @@
-import { SPRINT_STATUS_DEFAULT } from '../../utils/sprint_status.js';
-import {TASK_DEFAULT_STATUS} from '../../utils/task.js';
+import { SPRINT_STATUS_DEFAULT } from '../../constants/sprint_status.js';
+import {TASK_DEFAULT_STATUS} from '../../constants/task.js';
 
 //import all models here
 import SprintModel from "../models/sprint.js";

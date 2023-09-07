@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import {PROJECT_MEMBERS_DESIGNATIONS} from '../../utils/project_member_designations.js'
+import {PROJECT_MEMBERS_DESIGNATIONS} from '../../constants/project_member_designations.js'
 const Schema = mongoose.Schema;
 
 const ProjectMemberSchema = new Schema({

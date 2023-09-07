@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import {STATUS, TYPES, PRIORITY} from '../../utils/task.js';
+import {STATUS, TYPES, PRIORITY} from '../../constants/task.js';
 
 const Schema = mongoose.Schema;
 

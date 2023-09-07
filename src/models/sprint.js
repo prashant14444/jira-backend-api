@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { SPRINT_STATUS_DEFAULT, SPRINT_STATUS } from '../../utils/sprint_status.js';
+import { SPRINT_STATUS_DEFAULT, SPRINT_STATUS } from '../../constants/sprint_status.js';
 
 const Schema = mongoose.Schema;
 

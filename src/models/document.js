@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv'
 import mongoose from 'mongoose';
-import {DOCUMENT_COLLECTION_NAMES} from '../../utils/document_collection_names.js';
+import {DOCUMENT_COLLECTION_NAMES} from '../../constants/document_collection_names.js';
 
 dotenv.config(); // loading all the .env variables
 

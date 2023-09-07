@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import {STATUS, TYPES, PRIORITY, TASK_DEFAULT_STATUS} from '../../utils/task.js';
+import {STATUS, TYPES, PRIORITY, TASK_DEFAULT_STATUS} from '../../constants/task.js';
 
 const Schema = mongoose.Schema;
 
