@@ -46,10 +46,10 @@ const UserSchema = new Schema({
   },
   default_project_id: {
     type: mongoose.Schema.Types.ObjectId,
-    required: true,
+    default: null,
     validate: {
       validator: async function(default_project_id) {
-        const isExist = await this.model('Project').count({ _id: default_project_id }).exec();
+        const isExist = !default_project_id || await this.model('Project').count({ _id: default_project_id }).exec();
         return isExist;
       },
       message: props => `"${props.value}" Invalid project ID. Project doesn't exist by this ID`

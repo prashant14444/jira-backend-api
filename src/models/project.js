@@ -18,6 +18,7 @@ const ProjectSchema = new Schema({
   },
   description: {
     type: String,
+    default: String,
   },
   due_date: { 
     type: Date,
@@ -25,7 +26,8 @@ const ProjectSchema = new Schema({
   },
   documents:[{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Document'
+    ref: 'Document',
+    default: []
   }],
 
   //created by is referred from the User model because, project can be created by the user not the project member. Project memebr get created once the project gets created by a user. 
